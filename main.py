@@ -1,3 +1,4 @@
+import sys
 import time
 import _ctypes
 import pyautogui
@@ -13,6 +14,7 @@ PASSWORD = 'gu1d3@Ser'
 UPDATE_FOLDER = f'Update_{build}'
 GUIDE_DIRECTORY = 'GuideConnect'
 BUILD = '\\\\dev\\\\betareg\\\\guide\\\\'
+UPDATE = 'Update.xml'
 
 
 def filezilla_sign_in():
@@ -60,41 +62,83 @@ add_update_folder()
 def add_msi_files():
     signed_in.child_window(auto_id="1001", control_type="Edit", found_index=0).type_keys(BUILD)
     pyautogui.press('enter', interval=2)
+
+    try:
+        time.sleep(10)
+        signed_in.child_window(title="OK", auto_id="5100", control_type="Button").click_input()
+
+    except pywinauto.findwindows.ElementNotFoundError:
+        pass
+
     signed_in.child_window(best_match="..", control_type="ListItem", found_index=0).click_input()
+
     time.sleep(3), pyautogui.hotkey('ctrlleft', 'f'), time.sleep(3)
+    signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").set_edit_text(u'')
     signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").type_keys(f'{build}')
-    signed_in.child_window(best_match=f"{build }", control_type="ListItem").double_click_input()
+    signed_in.child_window(best_match="..", control_type="ListItem", found_index=0).click_input()
+
+    time.sleep(3), pyautogui.press('down', interval=1), pyautogui.press('enter', interval=1)
     signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").set_edit_text(u'')
     signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").type_keys('msi')
     signed_in.child_window(best_match=f"msi", control_type="ListItem").double_click_input()
+
+    signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").set_edit_text(u'')
     signed_in.child_window(best_match=f"{GUIDE_DIRECTORY}", control_type="ListItem").double_click_input()
-    signed_in.child_window(title=f"GuideConnect.msi", control_type="ListItem").double_click_input()
+    signed_in.child_window(title=f"GuideConnect.msi", control_type="ListItem", found_index=0).double_click_input()
 
     try:
-        signed_in.child_window(best_match=f"Update", control_type="ListItem").double_click_input()
+        time.sleep(10)
+        signed_in.child_window(title="OK", auto_id="5100", control_type="Button").click_input()
+
+    except pywinauto.findwindows.ElementNotFoundError:
+        pass
+
+    try:
+        signed_in.child_window(title=f"Update_{build}.xml", control_type="ListItem").double_click_input()
+        time.sleep(5)
+        signed_in.child_window(title=f"Update_{build}.xml", control_type="ListItem",
+                               found_index=1).click_input('right')
+        pyautogui.press('r', interval=1), pyautogui.typewrite(UPDATE), pyautogui.press('enter', interval=1)
+
+        try:
+            signed_in.child_window(title="Yes", auto_id="CommandButton_6", control_type="Button").click_input()
+
+        except pywinauto.findwindows.ElementNotFoundError:
+            pass
 
     except pywinauto.findbestmatch.MatchError:
         pass
 
 
-add_msi_files()
+def add_guide_up():
+    signed_in.child_window(auto_id="1001", control_type="Edit", found_index=0).type_keys(BUILD)
+    pyautogui.press('enter', interval=2)
 
-#
-# def add_guide_up():
-#     signed_in.child_window(auto_id="1001", control_type="Edit", found_index=0).type_keys(BUILD)
-#     pyautogui.press('enter', interval=2)
-#     signed_in.child_window(best_match=f"{build}", control_type="ListItem").double_click_input()
-#     signed_in.child_window(title="core", control_type="ListItem").double_click_input()
-#     signed_in.child_window(title="win32", control_type="ListItem").double_click_input()
-#     signed_in.child_window(best_match="amd64", control_type="ListItem").select()
-#     time.sleep(3), pyautogui.hotkey('ctrlleft', 'f'), time.sleep(3)
-#     signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").type_keys('GuideUp.exe')
-#
-#     try:
-#         signed_in.child_window(best_match="GuideUp.exe", control_type="ListItem").double_click_input()
-#
-#     except _ctypes.COMError:
-#         pass
-#
-#
-# add_guide_up()
+    signed_in.child_window(best_match="..", control_type="ListItem", found_index=0).click_input()
+    time.sleep(3), pyautogui.hotkey('ctrlleft', 'f'), time.sleep(3)
+
+    signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").type_keys(f'{build}')
+    signed_in.child_window(best_match="..", control_type="ListItem", found_index=0).click_input()
+
+    time.sleep(3), pyautogui.press('down', interval=1), pyautogui.press('enter', interval=1)
+    signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").set_edit_text(u'')
+
+    signed_in.child_window(title="core", control_type="ListItem").double_click_input()
+    signed_in.child_window(title="win32", control_type="ListItem").double_click_input()
+    signed_in.child_window(best_match="..", control_type="ListItem").select()
+
+    time.sleep(3), pyautogui.hotkey('ctrlleft', 'f'), time.sleep(3)
+    signed_in.child_window(title="Quick Search:", auto_id="-31888", control_type="Edit").type_keys('GuideUp.exe')
+    time.sleep(20)
+    signed_in.child_window(best_match="GuideUp.exe", control_type="ListItem").double_click_input()
+
+    try:
+        time.sleep(10)
+        signed_in.child_window(title="OK", auto_id="5100", control_type="Button").click_input()
+        add_msi_files()
+
+    except pywinauto.findwindows.ElementNotFoundError:
+        add_msi_files()
+
+
+add_guide_up()
